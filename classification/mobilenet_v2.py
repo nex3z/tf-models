@@ -1,6 +1,7 @@
 import logging
 import os
 from typing import List
+
 import numpy as np
 import tensorflow as tf
 from tensorflow.keras import layers, backend, Model
@@ -115,8 +116,8 @@ def download_imagenet_weights(alpha: float, input_shape: tuple, include_top: boo
     weight_path = tf.keras.utils.get_file(
         os.path.basename(weight_url),
         weight_url,
-        cache_dir='./weights',
-        cache_subdir='',
+        cache_dir='~/.keras',
+        cache_subdir='models',
     )
     return weight_path
 

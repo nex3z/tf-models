@@ -1,13 +1,11 @@
 import dataclasses
 import math
 import os
-from typing import List
+from typing import Iterable
 
 import numpy as np
 import tensorflow as tf
 from tensorflow.keras import layers, backend, Model
-
-from config import BlockConfig, DEFAULT_BLOCKS_ARGS
 
 BASE_WEIGHTS_URL = 'https://storage.googleapis.com/keras-applications/'
 CHANNEL_AXIS = 1 if backend.image_data_format() == 'channels_first' else 3
@@ -29,6 +27,31 @@ DENSE_K_INIT = {
         'distribution': 'uniform'
     }
 }
+
+
+@dataclasses.dataclass()
+class BlockConfig:
+    kernel_size: int
+    filters_in: int
+    filters_out: int
+    strides: int = 1
+    expand_ratio: int = 1
+    activation: str = 'swish'
+    se_ratio: float = 0.0
+    drop_rate: float = 0.0
+    id_skip: bool = True,
+    repeats: int = 1
+
+
+DEFAULT_BLOCKS_ARGS = (
+    BlockConfig(3, repeats=1, filters_in=32, filters_out=16, strides=1, expand_ratio=1, id_skip=True, se_ratio=0.25),
+    BlockConfig(3, repeats=2, filters_in=16, filters_out=24, strides=2, expand_ratio=6, id_skip=True, se_ratio=0.25),
+    BlockConfig(5, repeats=2, filters_in=25, filters_out=40, strides=2, expand_ratio=6, id_skip=True, se_ratio=0.25),
+    BlockConfig(3, repeats=3, filters_in=40, filters_out=80,  strides=2, expand_ratio=6, id_skip=True, se_ratio=0.25),
+    BlockConfig(5, repeats=3, filters_in=80, filters_out=112, strides=1, expand_ratio=6, id_skip=True, se_ratio=0.25),
+    BlockConfig(5, repeats=4, filters_in=112, filters_out=192, strides=2, expand_ratio=6, id_skip=True, se_ratio=0.25),
+    BlockConfig(3, repeats=1, filters_in=192, filters_out=320, strides=1, expand_ratio=6, id_skip=True, se_ratio=0.25),
+)
 
 
 def efficientnet_b0(include_top: bool = True, weights: str = 'imagenet',
@@ -68,7 +91,7 @@ def efficientnet(
         classes: int = 1000,
         width_coefficient: float = 1.0,
         depth_coefficient: float = 1.0,
-        configs: List[BlockConfig] = DEFAULT_BLOCKS_ARGS,
+        configs: Iterable[BlockConfig] = DEFAULT_BLOCKS_ARGS,
         drop_connect_rate: float = 0.2,
         dropout_rate: float = 0.2,
         activation: str = 'swish',
@@ -187,8 +210,8 @@ def download_imagenet_weights(model_name: str, include_top: bool):
     weight_path = tf.keras.utils.get_file(
         os.path.basename(weight_url),
         weight_url,
-        cache_dir='./weights',
-        cache_subdir='',
+        cache_dir='~/.keras',
+        cache_subdir='models',
     )
     return weight_path
 

@@ -1,4 +1,4 @@
-from utils.imagenet_labels import LABELS
+from classification.utils.imagenet_labels import LABELS
 
 
 def validate_input_shape(weights, input_shape, default_size):

@@ -137,8 +137,8 @@ def download_imagenet_weights(model_name: str, include_top: bool):
     weight_path = tf.keras.utils.get_file(
         os.path.basename(weight_url),
         weight_url,
-        cache_dir='./weights',
-        cache_subdir='',
+        cache_dir='~/.keras',
+        cache_subdir='models',
     )
     return weight_path
 
