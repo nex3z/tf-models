@@ -96,7 +96,7 @@ def conv2_pool(x: tf.Tensor):
 
 
 def stack(x: tf.Tensor, filters: int, blocks: int, strides1: int = 2, name: str = None) -> tf.Tensor:
-    x = block(x, filters, strides=strides1, name=f'{name}_block')
+    x = block(x, filters, strides=strides1, name=f'{name}_block1')
     for i in range(2, blocks + 1):
         x = block(x, filters, conv_shortcut=False, name=f'{name}_block{i}')
     return x
