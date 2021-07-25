@@ -122,6 +122,7 @@ def efficientnet(
                 drop_rate=drop_connect_rate * b / num_blocks,
             )
             x = mbconv_block(x, block_config, name=f'block_{i + 1}{chr(j + 97)}')
+            b += 1
 
     # Top
     x = layers.Conv2D(round_filters(1280, width_coefficient), 1, padding='same', use_bias=False,
@@ -172,7 +173,7 @@ def mbconv_block(inputs: tf.Tensor, config: BlockConfig, name: str) -> tf.Tensor
                            kernel_initializer=CONV_K_INIT, name=f'{name}_se_expand')(se)
         x = layers.multiply([x, se], name=f'{name}_se_excite')
 
-    # Output
+    # Project
     x = layers.Conv2D(config.filters_out, 1, padding='same', use_bias=False,
                       kernel_initializer=CONV_K_INIT, name=f'{name}_project_conv')(x)
     x = layers.BatchNormalization(axis=CHANNEL_AXIS, name=f'{name}_project_bn')(x)
